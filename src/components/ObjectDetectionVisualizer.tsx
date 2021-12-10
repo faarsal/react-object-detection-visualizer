@@ -2,24 +2,25 @@ import React, { useLayoutEffect, useRef } from "react";
 import { ObjectDetectionVisualizerProps } from "../models/ObjectDetectionVisualizerProps";
 import {
   BoundingBoxStyles,
-  BoundingBoxTextPosition,
+  TextPosition,
 } from "../models/ObjectDetectionVisualizerState";
 
 const ObjectDetectionVisualizer: React.FC<ObjectDetectionVisualizerProps> = (
   props
 ) => {
-  const { boundingBoxStyles: theme, annotations, image } = props;
-  const colorTheme: BoundingBoxStyles = {
-    boudingBoxFill: theme?.boudingBoxFill || "#6A66A3",
-    boudingBoxStroke: theme?.boudingBoxStroke || "#302E4D",
-    boundingBoxOpacity: theme?.boundingBoxOpacity || 0.2,
-    boundingBoxTextColor: theme?.boundingBoxTextColor || "yellow",
-    boundingBoxTextFont: theme?.boundingBoxTextFont || "18px Comic Sans MS",
+  const { boundingBoxStyles, annotations, image } = props;
+  const styles: BoundingBoxStyles = {
+    boudingBoxFill: boundingBoxStyles?.boudingBoxFill || "#6A66A3",
+    boudingBoxStroke: boundingBoxStyles?.boudingBoxStroke || "#302E4D",
+    boundingBoxOpacity: boundingBoxStyles?.boundingBoxOpacity || 0.2,
+    boundingBoxTextColor: boundingBoxStyles?.boundingBoxTextColor || "yellow",
+    boundingBoxTextFont:
+      boundingBoxStyles?.boundingBoxTextFont || "18px Comic Sans MS",
     boundingBoxTextPosition:
-      theme?.boundingBoxTextPosition || BoundingBoxTextPosition.TopLeft,
-    disableFill: theme?.disableFill,
-    disableStroke: theme?.disableStroke,
-    disableText: theme?.disableText,
+      boundingBoxStyles?.boundingBoxTextPosition || TextPosition.TopLeft,
+    disableFill: boundingBoxStyles?.disableFill,
+    disableStroke: boundingBoxStyles?.disableStroke,
+    disableLabel: boundingBoxStyles?.disableLabel,
   };
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
@@ -37,28 +38,28 @@ const ObjectDetectionVisualizer: React.FC<ObjectDetectionVisualizerProps> = (
         imgRef.current?.parentElement?.removeChild(imgRef.current);
 
         annotations.forEach((anot) => {
-          canvasContext!.fillStyle = colorTheme.boudingBoxFill!;
-          canvasContext!.strokeStyle = colorTheme.boudingBoxStroke!;
+          canvasContext!.fillStyle = styles.boudingBoxFill!;
+          canvasContext!.strokeStyle = styles.boudingBoxStroke!;
           let { x, y, height, width } = anot.coordinates;
           x = x - width / 2;
           y = y - height / 2;
-          if (!colorTheme.disableFill) {
+          if (!styles.disableFill) {
             canvasContext?.rect(x, y, width, height);
-            canvasContext!.globalAlpha = colorTheme.boundingBoxOpacity!;
+            canvasContext!.globalAlpha = styles.boundingBoxOpacity!;
             canvasContext?.fill();
           }
-          if (!colorTheme.disableStroke) {
+          if (!styles.disableStroke) {
             canvasContext?.rect(x - 1, y - 1, width + 1, height + 1);
             canvasContext!.globalAlpha = 1;
             canvasContext?.stroke();
           }
-          if (!colorTheme.disableText) {
-            canvasContext!.font = colorTheme.boundingBoxTextFont!;
+          if (!styles.disableLabel) {
+            canvasContext!.font = styles.boundingBoxTextFont!;
             const texWidth = canvasContext?.measureText(anot.label).width!;
             console.log(texWidth);
-            canvasContext!.fillStyle = colorTheme.boundingBoxTextColor!;
+            canvasContext!.fillStyle = styles.boundingBoxTextColor!;
 
-            const textPosition = colorTheme.boundingBoxTextPosition;
+            const textPosition = styles.boundingBoxTextPosition;
             const textCoordinates =
               textPosition === 0
                 ? { x, y }
@@ -82,7 +83,7 @@ const ObjectDetectionVisualizer: React.FC<ObjectDetectionVisualizerProps> = (
   });
   return (
     <>
-      <img ref={imgRef} src={image} style={{ display: "none" }} />
+      <img ref={imgRef} src={image} style={{ display: "none" }} alt="" />
       <canvas ref={canvasRef} />
     </>
   );

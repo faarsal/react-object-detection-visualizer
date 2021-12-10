@@ -1,4 +1,4 @@
-import ObjectDetectionVisualizer from "./components/ObjectDetectionVisualizer";
+import ObjectDetectionVisualizer from "object-detection-visualizer";
 import data from "./assets/flowers.json";
 
 function App() {
@@ -8,6 +8,9 @@ function App() {
         <ObjectDetectionVisualizer
           annotations={d.annotations}
           image={`/train/${d.image}`}
+          boundingBoxStyles={{
+            boundingBoxOpacity: 0.6,
+          }}
         />
       ))}
     </div>
